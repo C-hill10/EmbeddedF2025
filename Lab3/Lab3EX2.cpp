@@ -10,8 +10,8 @@ using namespace std;
 int b=250; //distance between the kobuki wheels
 double w=3.14;//angular velocity
 void movement(int, int);
+void stopKobuki();
 int kobuki;
-
 int main(){
 
 	wiringPiSetup();
@@ -48,7 +48,15 @@ int main(){
 			{
 				printf("isButton: %u | Value: %d\n", event.number, event.value);
 				/*Interpret the joystick input and use that input to move the Kobuki*/
-
+				if(event.number==7 && event.value==1){
+					stopKobuki();
+					cout<<"kobuki has stopped"<<endl;
+				}else{
+					if(event.number==8 && event.value==1){
+						serialClose(kobuki);
+						break;
+					}
+				}
 				
 			}
 			if (event.isAxis())
@@ -116,4 +124,8 @@ void movement(int sp, int r){
 	/*Pause the script so the data send rate is the
 	same as the Kobuki data receive rate*/
 	usleep(20000);
+}
+void stopKobuki() {
+    movement(0, 0); // Send zero speed to stop
+    usleep(100000); // Wait for 100 ms to ensure the stop command is received
 }
