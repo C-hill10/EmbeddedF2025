@@ -7,7 +7,8 @@
 #include <unistd.h>
 #include <cstdlib>
 using namespace std;
-
+int b=250; //distance between the kobuki wheels
+double w=3.14;//angular velocity
 void movement(int, int);
 int kobuki;
 
@@ -48,16 +49,30 @@ int main(){
 				printf("isButton: %u | Value: %d\n", event.number, event.value);
 				/*Interpret the joystick input and use that input to move the Kobuki*/
 
-
+				
 			}
 			if (event.isAxis())
 			{
 				printf("isAxis: %u | Value: %d\n", event.number, event.value);
 				/*Interpret the joystick input and use that input to move the Kobuki*/
-
+				if(event.number==4){
+					 if(event.value==-32767){
+					for(int i=0;i<6;i++){
+						movement((int)((w*b)/2),1);
+					}
+					cout<<"left turn done"<<endl;
+				}
+					else{ if(event.value==32767){
+					for(int i=0;i<6;i++){
+						movement((int)((w*b)/2),-1);
+					}
+					cout<<"right turn done"<<endl;
+				}
+				}
+				}
+			}
 
 				
-			}
 		}
 
 	}
@@ -68,11 +83,11 @@ int main(){
 void movement(int sp, int r){
 
 	//Create the byte stream packet with the following format:
-	unsigned char b_0 = ; /*Byte 0: Kobuki Header 0*/
-	unsigned char b_1 = ; /*Byte 1: Kobuki Header 1*/
-	unsigned char b_2 = ; /*Byte 2: Length of Payload*/
-	unsigned char b_3 = ; /*Byte 3: Sub-Payload Header*/
-	unsigned char b_4 = ; /*Byte 4: Length of Sub-Payload*/
+	unsigned char b_0 = 0xAA; /*Byte 0: Kobuki Header 0*/
+	unsigned char b_1 = 0x55; /*Byte 1: Kobuki Header 1*/
+	unsigned char b_2 = 0x06; /*Byte 2: Length of Payload*/
+	unsigned char b_3 = 0x01; /*Byte 3: Sub-Payload Header*/
+	unsigned char b_4 = 0x04; /*Byte 4: Length of Sub-Payload*/
 
 	unsigned char b_5 = sp & 0xff;	//Byte 5: Payload Data: Speed(mm/s)
 	unsigned char b_6 = (sp >> 8) & 0xff; //Byte 6: Payload Data: Speed(mm/s)
@@ -86,9 +101,19 @@ void movement(int sp, int r){
 		checksum ^= packet[i];
 
 	/*Send the data (Byte 1 - Byte 9) to Kobuki using serialPutchar (kobuki, );*/
+	serialPutchar(kobuki,b_0);
+	serialPutchar(kobuki,b_1);
+	serialPutchar(kobuki,b_2);
+	serialPutchar(kobuki,b_3);
+	serialPutchar(kobuki,b_4);
+	serialPutchar(kobuki,b_5);
+	serialPutchar(kobuki,b_6);
+	serialPutchar(kobuki,b_7);
+	serialPutchar(kobuki,b_8);
+	serialPutchar(kobuki,checksum);
 
 
 	/*Pause the script so the data send rate is the
 	same as the Kobuki data receive rate*/
-
+	usleep(20000);
 }

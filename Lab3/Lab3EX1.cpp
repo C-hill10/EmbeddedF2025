@@ -47,9 +47,9 @@ int main(){
 
 void movement(int sp, int r){
 	//Create the byte stream packet with the following format:
-	unsigned char b_0 = ; /*Byte 0: Kobuki Header 0*/
-	unsigned char b_1 = ; /*Byte 1: Kobuki Header 1*/
-	unsigned char b_2 = ; /*Byte 2: Length of Payload*/
+	unsigned char b_0 = 0xAA; /*Byte 0: Kobuki Header 0*/
+	unsigned char b_1 = 0x55; /*Byte 1: Kobuki Header 1*/
+	unsigned char b_2 = 0x06; /*Byte 2: Length of Payload*/
 	unsigned char b_3 = ; /*Byte 3: Sub-Payload Header (Base control)*/
 	unsigned char b_4 = ; /*Byte 4: Length of Sub-Payload*/
 
@@ -77,3 +77,4 @@ void stopKobuki() {
     usleep(100000); // Wait for 100 ms to ensure the stop command is received
 }
 
+//Connor Hill and dylan sellers
