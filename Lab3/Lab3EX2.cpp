@@ -7,8 +7,8 @@
 #include <unistd.h>
 #include <cstdlib>
 using namespace std;
-int b=250; //distance between the kobuki wheels
-double w=3.14;//angular velocity
+int b=230; //distance between the kobuki wheels
+double w=0.785;//angular velocity
 void movement(int, int);
 void stopKobuki();
 int kobuki;
@@ -48,12 +48,13 @@ int main(){
 			{
 				printf("isButton: %u | Value: %d\n", event.number, event.value);
 				/*Interpret the joystick input and use that input to move the Kobuki*/
-				if(event.number==7 && event.value==1){
+				if(event.number==9 && event.value==1){
 					stopKobuki();
 					cout<<"kobuki has stopped"<<endl;
 				}else{
 					if(event.number==8 && event.value==1){
 						serialClose(kobuki);
+						cout<<"kobuki has been closed"<<endl;
 						break;
 					}
 				}
@@ -65,16 +66,24 @@ int main(){
 				/*Interpret the joystick input and use that input to move the Kobuki*/
 				if(event.number==4){
 					 if(event.value==-32767){
-					for(int i=0;i<6;i++){
 						movement((int)((w*b)/2),1);
-					}
 					cout<<"left turn done"<<endl;
 				}
 					else{ if(event.value==32767){
-					for(int i=0;i<6;i++){
 						movement((int)((w*b)/2),-1);
-					}
 					cout<<"right turn done"<<endl;
+					}
+				}
+				}else{
+					if(event.number==5){
+					if(event.value==-32767){
+						movement(100,0);
+					cout<<"moved forward"<<endl;
+				}
+					else{ if(event.value==32767){
+						movement(-100,0);
+					cout<<"moved backwards"<<endl;
+					}
 				}
 				}
 				}
