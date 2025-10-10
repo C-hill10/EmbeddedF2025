@@ -21,7 +21,8 @@ void readData();
 int kobuki, new_socket;
 
 /*Create char buffer to store transmitted data*/
-char buffer[9];
+char buffer[10]={0};
+
 int main(){
 	//Initialize filestream for the Kobuki
 	wiringPiSetup();
@@ -117,9 +118,6 @@ void readData(){
 	
 	/*Print the data to the terminal*/
 	cout<<"speed (mm/s): "<<speed<< "turn radius (mm): "<<radius<<endl;
-
-	
-
 	/*Use the received data to control the Kobuki*/
 	movement(speed,radius);
 	
