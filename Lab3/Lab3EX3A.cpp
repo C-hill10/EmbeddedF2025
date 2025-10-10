@@ -19,9 +19,10 @@ void createSocket();
 void readData();
 
 int kobuki, new_socket;
-
+double w=0.785;//angular velocity
+int b=230; //distance between the kobuki wheels
 /*Create char buffer to store transmitted data*/
-char buffer[5]={0};
+char Ctrl;
 
 int main(){
 	//Initialize filestream for the Kobuki
@@ -115,32 +116,38 @@ void createSocket(){
 
 void readData(){
 	/*Read the incoming data stream from the controller*/
-	int recvMsg=recv(new_socket,&buffer,5,0);
-    int speed=(int)(buffer[5]+buffer[6]);
-	int radius=(int)(buffer[7]+buffer[8]);
-	
-	/*Print the data to the terminal*/
-	cout<<"speed (mm/s): "<<speed<< "\nturn radius (mm): "<<radius<<endl;
-	/*Use the received data to control the Kobuki*/
-	movement(speed,radius);
-	
-	if(digitalRead(1)) {
-	/*Closes out of all connections cleanly*/
-		cout<<"closed connection"<<endl;
-	//When you need to close out of all connections, please
-	//close both the Kobuki and TTP/IP data streams.
-	//Not doing so will result in the need to restart
-	//the raspberry pi and Kobuki
+	int recvMsg=read(new_socket,&Ctrl,sizeof(Ctrl));
+    cout<<"Control is "<<Ctrl<<endl;
+	switch(Ctrl){
+		case 'F': 
+		movement(100,0);
+		break;
+		case 'B':
+		movement(-100,0);
+		break;
+		case 'R':
+		movement((int)((w*b)/2),-1);
+		break;
+		case 'L':
+		movement((int)((w*b)/2),1);
+		break;
+		case 'S':
+		movement(0,0);
+		break;
+		case 'C':
 		close(new_socket);
 		serialClose(kobuki);
 		exit(0);
+		break;
 	}
+	/*Print the data to the terminal*/
+	/*Use the received data to control the Kobuki*/
 
 
 
 
 	/*Reset the buffer*/
-	memset(&buffer, '0', sizeof(buffer));
+	memset(&Ctrl, '0', sizeof(Ctrl));
 
 
 }

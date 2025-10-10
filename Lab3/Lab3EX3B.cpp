@@ -18,11 +18,11 @@ using namespace std;
 int createSocket();
 bool Close=false;
 int sock = 0;
-int speed;
-int radius;
+int speed=0;
+int radius=0;
 double w=0.785;//angular velocity
 int b=230; //distance between the kobuki wheels
-char buffer[5]={0};
+char Ctrl;
 int main(int argc, char const *argv[]){
 	
 	//Open the file stream for the joystick
@@ -48,11 +48,11 @@ int main(int argc, char const *argv[]){
 				/*Interpret the joystick input and use that input to move the Kobuki*/
 				if(event.number==7 && event.value==1){
 					//stopKobuki();
-					speed=0;
-					radius=0;
+					Ctrl='S';
 				}else{
 					if(event.number==8 && event.value==1){
 						Close=true;
+						Ctrl='C';
 						cout<<"kobuki has been closed"<<endl;
 						break;
 					}
@@ -66,14 +66,12 @@ int main(int argc, char const *argv[]){
 				if(event.number==6){
 					 if(event.value==-32767){
 						//movement((int)((w*b)/2),1);
-						speed=(int)((w*b)/2);
-						radius=1;
+						Ctrl='L';
 					cout<<"left turn done"<<endl;
 				}
 					else{ if(event.value==32767){
 						//movement((int)((w*b)/2),-1);
-						speed=(int)((w*b)/2);
-						radius=-1;
+						Ctrl='R';
 					cout<<"right turn done"<<endl;
 					}
 				}
@@ -81,47 +79,40 @@ int main(int argc, char const *argv[]){
 					if(event.number==7){
 					if(event.value==-32767){
 						//movement(100,0);
-						speed=100;
-						radius=0;
+						Ctrl='F';
 					cout<<"moved forward"<<endl;
 				}
 					else{ if(event.value==32767){
 						//movement(-100,0);
-						speed=-100;
-						radius=0;
+					    Ctrl='B';
 					cout<<"moved backwards"<<endl;
 					}
 				}
 				}
 				}
 			}
-
-				
+			/*Convert the event to a useable data type so it can be sent*/
+		   cout<<"sending Control "<<Ctrl<<endl;
+		   /*Send the data to the server*/
+		   send(sock,&Ctrl,sizeof(Ctrl),0);
+		   cout<<"Command sent"<<endl;
+		   usleep(20000);
 		}
 
 	
-		/*Convert the event to a useable data type so it can be sent*/
-		 buffer[0] = speed & 0xff;	//Byte 5: Payload Data: Speed(mm/s)
-	     buffer[1] = (speed >> 8) & 0xff; //Byte 6: Payload Data: Speed(mm/s)
-		 buffer[2] = radius & 0xff;	//Byte 7: Payload Data: Radius(mm)
-		 buffer[3] = (radius >> 8) & 0xff;	//Byte 8: Payload Data: Radius(mm)
-		/*Print the data stream to the terminal*/
-		cout<<"byte 1:"<<buffer[0]<<"byte 2:"<<buffer[1]<<"byte 3:"<<buffer[2]<<"byte 4:"<<buffer[4]<<endl;
-		/*Send the data to the server*/
-		send(sock,&buffer,sizeof(buffer),0);
-		cout<<"Command sent"<<endl;
-		if(Close) {
+		if(Close){
 		/*Closes out of all connections cleanly*/
-
+			cout<<"running close connection"<<endl;
 		//When you need to close out of the connection, please
 		//close TTP/IP data streams.
 		//Not doing so will result in the need to restart
 		//the raspberry pi and Kobuki
+		sleep(1);
 			close(sock);
 			exit(0);
 
 		/*Set a delay*/
-		usleep(500000);
+		usleep(20);
 	}
 }
 	return 0;
@@ -144,7 +135,7 @@ int createSocket(){
 	serv_addr.sin_port   = htons(PORT);
 
 	/*Use the IP address of the server you are connecting to*/
-	if(inet_pton(AF_INET, "XX.XX.XX.XX" , &serv_addr.sin_addr) <= 0){
+	if(inet_pton(AF_INET, "10.227.22.73" , &serv_addr.sin_addr) <= 0){
 		printf("\nInvalid address/ Address not supported \n");
 		return -1;
 	}
