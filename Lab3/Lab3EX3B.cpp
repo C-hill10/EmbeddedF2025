@@ -16,9 +16,13 @@
 using namespace std;
 
 int createSocket();
-
+bool Close=false;
 int sock = 0;
-
+int speed;
+int radius;
+double w=0.785;//angular velocity
+int b=230; //distance between the kobuki wheels
+char buffer[5]={0};
 int main(int argc, char const *argv[]){
 	
 	//Open the file stream for the joystick
@@ -36,14 +40,77 @@ int main(int argc, char const *argv[]){
 	while(true){
 
 		/*Sample the events from the joystick*/
+		if (joystick.sample(&event))
+		{
+			if (event.isButton())
+			{
+				printf("isButton: %u | Value: %d\n", event.number, event.value);
+				/*Interpret the joystick input and use that input to move the Kobuki*/
+				if(event.number==7 && event.value==1){
+					//stopKobuki();
+					speed=0;
+					radius=0;
+				}else{
+					if(event.number==8 && event.value==1){
+						Close=true;
+						cout<<"kobuki has been closed"<<endl;
+						break;
+					}
+				}
+				
+			}
+			if (event.isAxis())
+			{
+				printf("isAxis: %u | Value: %d\n", event.number, event.value);
+				/*Interpret the joystick input and use that input to move the Kobuki*/
+				if(event.number==6){
+					 if(event.value==-32767){
+						//movement((int)((w*b)/2),1);
+						speed=(int)((w*b)/2);
+						radius=1;
+					cout<<"left turn done"<<endl;
+				}
+					else{ if(event.value==32767){
+						//movement((int)((w*b)/2),-1);
+						speed=(int)((w*b)/2);
+						radius=-1;
+					cout<<"right turn done"<<endl;
+					}
+				}
+				}else{
+					if(event.number==7){
+					if(event.value==-32767){
+						//movement(100,0);
+						speed=100;
+						radius=0;
+					cout<<"moved forward"<<endl;
+				}
+					else{ if(event.value==32767){
+						//movement(-100,0);
+						speed=-100;
+						radius=0;
+					cout<<"moved backwards"<<endl;
+					}
+				}
+				}
+				}
+			}
 
+				
+		}
+
+	
 		/*Convert the event to a useable data type so it can be sent*/
-
+		 buffer[0] = speed & 0xff;	//Byte 5: Payload Data: Speed(mm/s)
+	     buffer[1] = (speed >> 8) & 0xff; //Byte 6: Payload Data: Speed(mm/s)
+		 buffer[2] = radius & 0xff;	//Byte 7: Payload Data: Radius(mm)
+		 buffer[3] = (radius >> 8) & 0xff;	//Byte 8: Payload Data: Radius(mm)
 		/*Print the data stream to the terminal*/
-
+		cout<<"byte 1:"<<buffer[0]<<"byte 2:"<<buffer[1]<<"byte 3:"<<buffer[2]<<"byte 4:"<<buffer[4]<<endl;
 		/*Send the data to the server*/
-
-		if(/**/) {
+		send(sock,&buffer,sizeof(buffer),0);
+		cout<<"Command sent"<<endl;
+		if(Close) {
 		/*Closes out of all connections cleanly*/
 
 		//When you need to close out of the connection, please
@@ -54,7 +121,9 @@ int main(int argc, char const *argv[]){
 			exit(0);
 
 		/*Set a delay*/
+		usleep(500000);
 	}
+}
 	return 0;
 }
 

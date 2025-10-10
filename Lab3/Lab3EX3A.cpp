@@ -21,13 +21,13 @@ void readData();
 int kobuki, new_socket;
 
 /*Create char buffer to store transmitted data*/
-char buffer[10]={0};
+char buffer[5]={0};
 
 int main(){
 	//Initialize filestream for the Kobuki
 	wiringPiSetup();
 	kobuki = serialOpen("/dev/kobuki", 115200);
-
+	pinMode(1,INPUT);
 	//Create connection to client
 	createSocket();
 
@@ -79,7 +79,7 @@ void createSocket(){
 	struct sockaddr_in address;
 	int opt =1;
 	int addrlen = sizeof(address);
-
+	cout<<"starting to set up socket"<<endl;
 	if((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0){
 		perror("socket failed");
 		exit(EXIT_FAILURE);
@@ -98,32 +98,35 @@ void createSocket(){
 		perror("bind failed");
 		exit(EXIT_FAILURE);
 	}
-
+	cout<<"binded to socket, Listening for connection"<<endl;
 	if(listen(server_fd, 3) < 0){
 		perror("listen");
 		exit(EXIT_FAILURE);
 	}
-
+	cout<<"done listening"<<endl;
 	if((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0){
 		perror("accept");
 		exit(EXIT_FAILURE);
+	}else{
+		cout<<"Connection Succesful"<<endl;
 	}
+	cout<<"Connection accepted"<<endl;
 }
 
 void readData(){
 	/*Read the incoming data stream from the controller*/
-	buffer=recv(new_socket,&buffer,9,0);
+	int recvMsg=recv(new_socket,&buffer,5,0);
     int speed=(int)(buffer[5]+buffer[6]);
 	int radius=(int)(buffer[7]+buffer[8]);
 	
 	/*Print the data to the terminal*/
-	cout<<"speed (mm/s): "<<speed<< "turn radius (mm): "<<radius<<endl;
+	cout<<"speed (mm/s): "<<speed<< "\nturn radius (mm): "<<radius<<endl;
 	/*Use the received data to control the Kobuki*/
 	movement(speed,radius);
 	
-	if(/**/) {
+	if(digitalRead(1)) {
 	/*Closes out of all connections cleanly*/
-
+		cout<<"closed connection"<<endl;
 	//When you need to close out of all connections, please
 	//close both the Kobuki and TTP/IP data streams.
 	//Not doing so will result in the need to restart
@@ -137,7 +140,7 @@ void readData(){
 
 
 	/*Reset the buffer*/
-	memset(&/*buffer*/, '0', sizeof(/*buffer*/));
+	memset(&buffer, '0', sizeof(buffer));
 
 
 }

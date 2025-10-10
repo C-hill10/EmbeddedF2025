@@ -48,7 +48,7 @@ int main(){
 			{
 				printf("isButton: %u | Value: %d\n", event.number, event.value);
 				/*Interpret the joystick input and use that input to move the Kobuki*/
-				if(event.number==9 && event.value==1){
+				if(event.number==7 && event.value==1){
 					stopKobuki();
 					cout<<"kobuki has stopped"<<endl;
 				}else{
@@ -64,7 +64,7 @@ int main(){
 			{
 				printf("isAxis: %u | Value: %d\n", event.number, event.value);
 				/*Interpret the joystick input and use that input to move the Kobuki*/
-				if(event.number==4){
+				if(event.number==6){
 					 if(event.value==-32767){
 						movement((int)((w*b)/2),1);
 					cout<<"left turn done"<<endl;
@@ -75,7 +75,7 @@ int main(){
 					}
 				}
 				}else{
-					if(event.number==5){
+					if(event.number==7){
 					if(event.value==-32767){
 						movement(100,0);
 					cout<<"moved forward"<<endl;
