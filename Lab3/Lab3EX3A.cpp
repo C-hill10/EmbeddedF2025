@@ -21,7 +21,7 @@ void readData();
 int kobuki, new_socket;
 
 /*Create char buffer to store transmitted data*/
-
+char buffer[9];
 int main(){
 	//Initialize filestream for the Kobuki
 	wiringPiSetup();
@@ -39,23 +39,36 @@ int main(){
 
 void movement(int sp, int r){
 	//Create the byte stream packet with the following format:
-	/*Byte 0: Kobuki Header 0*/
-	/*Byte 1: Kobuki Header 1*/
-	/*Byte 2: Length of Payload*/
-	/*Byte 3: Payload Header*/
-	/*Byte 4: Payload Data: Length*/
-	/*Byte 5: Payload Data: Speed(mm/s)*/
-	/*Byte 6: Payload Data: Speed(mm/s)*/
-	/*Byte 7: Payload Data: Radius(mm)*/
-	/*Byte 8: Payload Data: Radius(mm)*/
-	/*Byte 9: Checksum*/
+	unsigned char b_0 = 0xAA; /*Byte 0: Kobuki Header 0*/
+	unsigned char b_1 = 0x55; /*Byte 1: Kobuki Header 1*/
+	unsigned char b_2 = 0x06; /*Byte 2: Length of Payload*/
+	unsigned char b_3 = 0x01; /*Byte 3: Sub-Payload Header*/
+	unsigned char b_4 = 0x04; /*Byte 4: Length of Sub-Payload*/
+
+	unsigned char b_5 = sp & 0xff;	//Byte 5: Payload Data: Speed(mm/s)
+	unsigned char b_6 = (sp >> 8) & 0xff; //Byte 6: Payload Data: Speed(mm/s)
+	unsigned char b_7 = r & 0xff;	//Byte 7: Payload Data: Radius(mm)
+	unsigned char b_8 = (r >> 8) & 0xff;	//Byte 8: Payload Data: Radius(mm)
+	unsigned char checksum = 0;		//Byte 9: Checksum
 
 	/*Send the data to the Kobuki over a serial stream*/
-
+	serialPutchar(kobuki,b_0);
+	serialPutchar(kobuki,b_1);
+	serialPutchar(kobuki,b_2);
+	serialPutchar(kobuki,b_3);
+	serialPutchar(kobuki,b_4);
+	serialPutchar(kobuki,b_5);
+	serialPutchar(kobuki,b_6);
+	serialPutchar(kobuki,b_7);
+	serialPutchar(kobuki,b_8);
 	/*Checksum all the data and send that as well*/
-
+	char packet[] = {b_0,b_1,b_2,b_3,b_4,b_5,b_6,b_7,b_8};
+	for (unsigned int i = 2; i < 9; i++)
+		checksum ^= packet[i];
+		serialPutchar(kobuki,checksum);
 	/*Pause the script so the data send rate is the
 	same as the Kobuki receive rate*/
+	usleep(20000);
 }
 
 //Creates the connection between the client and
@@ -98,17 +111,17 @@ void createSocket(){
 
 void readData(){
 	/*Read the incoming data stream from the controller*/
-
-
-	
+	buffer=recv(new_socket,&buffer,9,0);
+    int speed=(int)(buffer[5]+buffer[6]);
+	int radius=(int)(buffer[7]+buffer[8]);
 	
 	/*Print the data to the terminal*/
-
+	cout<<"speed (mm/s): "<<speed<< "turn radius (mm): "<<radius<<endl;
 
 	
 
 	/*Use the received data to control the Kobuki*/
-
+	movement(speed,radius);
 	
 	if(/**/) {
 	/*Closes out of all connections cleanly*/
