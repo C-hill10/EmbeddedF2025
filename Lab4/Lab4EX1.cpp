@@ -41,9 +41,9 @@ int main(){
 		char drop=serialGetchar(kobuki);
 		char cliff= serialGetchar(kobuki);
 		/*Print the data to the screen.*/
-		cout<<"Left bumper ="<<(bumper&0x01)<<" Center bumper ="<<(bumper&0x02)<<" Right bumper = "<<(bumper&0x04)<<endl;
-		cout<<"Left wheel ="<<(drop&0x01)<<" Center wheel ="<<(drop&0x02)<<" Right wheel = "<<(drop&0x04)<<endl;
-		cout<<"Left cliff ="<<(cliff&0x01)<<" Center cliff ="<<(cliff&0x02)<<" Right cliff = "<<(cliff&0x04)<<endl;
+		cout<<"Right bumper ="<<(bumper&0x01)<<" Center bumper ="<<(bumper&0x02)<<" Left bumper = "<<(bumper&0x04)<<endl;
+		cout<<"Left wheel ="<<(drop&0x01)<<" Right wheel = "<<(drop&0x02)<<endl;
+		cout<<"Right cliff ="<<(cliff&0x01)<<" Center cliff ="<<(cliff&0x02)<<" Left cliff = "<<(cliff&0x04)<<endl;
 		/*Read through 6 bytes between the cliff sensors and
 		the button sensors.*/
 		serialGetchar(kobuki);
@@ -56,7 +56,7 @@ int main(){
 		char button = serialGetchar(kobuki);
 		/*Close the script and the connection to the Kobuki when
 		Button 1 on the Kobuki is pressed. Use serialClose(kobuki);*/
-		if(button & 0x02){
+		if((button >> 1) && 0x01){
 			serialClose(kobuki);
 			break;
 		}
