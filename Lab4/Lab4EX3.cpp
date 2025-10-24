@@ -29,6 +29,7 @@ void readData();
 void turnRight();
 void turnLeft();
 void stopKobuki();
+float read_sonar();
 int main(){
 	//Create connection to the Kobuki
 	wiringPiSetup();
@@ -36,11 +37,21 @@ int main(){
 
 	while(serialDataAvail(kobuki) != -1){
 		readData();
+		float distance = read_sonar();
 		/*Read the initial data. If there are no flags,
 		the default condition is forward.*/
+		if(Rbump || Lbump || Cbump|| Lwheel || Rwheel ||Rcliff || Ccliff || Lcliff){
+			if(Ccliff||Rcliff||Lcliff){
+				stopKobuki();
+			readData();
+
+
+		}else{
 		/*Move slowly to give the sensors enough time to read data,
 		the recommended speed is 100mm/s*/
-
+		movement(100,0);
+		usleep(20000);
+		}
 		/*Create different states as to satisfy the conditions above.
 		Remember, a single press of a bumper may last longer
 		than one data cycle.*/
@@ -168,3 +179,51 @@ movement((int)(w*b)/2,1);
 usleep(20000);
 }
 }
+float read_sonar()
+{
+    pinMode(1,OUTPUT);
+    digitalWrite(1,LOW);
+    usleep(2);
+    digitalWrite(1,HIGH);
+    usleep(5);
+    digitalWrite(1,LOW);
+    /*Echo holdoff delay 750 us*/
+    usleep(750);
+
+
+    /*Switch the pinMode to input*/ 
+    pinMode(1,INPUT);
+    
+    
+    /*Get the time it takes for signal to leave sensor and come back.*/
+
+    // 1. defind a varable to get the current time t1. Refer to "High_Resolution_Clock_Reference.pdf" for more information
+    auto t1 = high_resolution_clock::now();
+    int pulse_width;
+    while(digitalRead(1))
+    {
+        // 2. defind a varable to get the current time t2.
+        auto t2 = high_resolution_clock::now();
+        // 3. calculate the time duration: t2 - t1
+        pulse_width = chrono::duration_cast<chrono::microseconds>(t2 - t1).count();
+        if (pulse_width >= 18500){
+            break;
+        }
+        
+        // 4. if the duration is larger than the Pulse Maxium 18.5ms, break the loop.
+    }
+
+
+
+    /*Calculate the distance by using the time duration that you just obtained.*/ //Speed of sound is 340m/s
+    float distance = (pulse_width/2.0) *(343)/10000;
+
+    /*Delay before next measurement. The actual delay may be a little longer than what is shown is the datasheet.*/
+    usleep(250);
+    return distance;
+}
+
+void dontFall(){
+
+}
+
