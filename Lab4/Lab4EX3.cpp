@@ -30,6 +30,9 @@ void turnRight();
 void turnLeft();
 void stopKobuki();
 float read_sonar();
+void dontFall();
+void helpMeeeeeee()
+void dontCorner();
 int main(){
 	//Create connection to the Kobuki
 	wiringPiSetup();
@@ -40,11 +43,26 @@ int main(){
 		float distance = read_sonar();
 		/*Read the initial data. If there are no flags,
 		the default condition is forward.*/
-		if(Rbump || Lbump || Cbump|| Lwheel || Rwheel ||Rcliff || Ccliff || Lcliff){
+		bool tooClose = (distance<20);
+		if(Rbump || Lbump || Cbump|| Lwheel || Rwheel ||Rcliff || Ccliff || Lcliff || tooClose){
 			if(Ccliff||Rcliff||Lcliff){
-				stopKobuki();
-			readData();
-
+				dontFall();
+			}
+			if(tooClose){
+				if((rand()%2)==1){
+					turnRight();
+				}else{
+					turnLeft();
+				}
+			}
+			if(Rbump||Lbump||Cbump){
+				dontCorner();
+			}
+			if(Lwheel ||Rwheel){
+				helpMeeeeeee();
+			}
+			
+			
 
 		}else{
 		/*Move slowly to give the sensors enough time to read data,
@@ -222,8 +240,30 @@ float read_sonar()
     usleep(250);
     return distance;
 }
-
 void dontFall(){
-
+while(Ccliff||Rcliff||Lcliff){
+	turnRight();
+	readData();
 }
-
+}
+void dontCorner(){
+	stopKobuki();
+	if(Rbump){
+		turnLeft();
+	}elseif(Lbump){
+	turnRight();
+	}
+	elseif(Cbump){
+		turnRight();
+		turnRight();
+	}
+	else{
+		helpMeeeeeee();
+	}
+		
+	}
+void helpMeeeeeee(){
+	stopKobuki();
+	serialFlush(kobuki);
+	serialClose(kobuki);
+}
