@@ -10,15 +10,25 @@
 using namespace std;
 
 int kobuki;
-
+int b=230; //distance between the kobuki wheels
+double w=0.785;//angular velocity
 unsigned int bumper;
 unsigned int drop;
 unsigned int cliff;
 unsigned int button; 
-
+bool Rbump;
+bool Lbump;
+bool Cbump;
+bool Lwheel;
+bool Rwheel;
+bool Rcliff;
+bool Ccliff;
+bool Lcliff;
 void movement(int, int);
 void readData();
-
+void turnRight();
+void turnLeft();
+void stopKobuki();
 int main(){
 	//Create connection to the Kobuki
 	wiringPiSetup();
@@ -101,14 +111,14 @@ void readData(){
 		char drop=serialGetchar(kobuki);
 		char cliff= serialGetchar(kobuki);
 		/*Print the data to the screen.*/
-		bool Rbump = (bumper)&0x01;
-		bool Lbump = (bumper &0x04);
-		bool Cbump = (bumper&0x02);
-		bool Lwheel = (drop&0x02);
-		bool Rwheel = (drop&0x01);
-		bool Rcliff = ((cliff)&0x01);
-		bool Ccliff = (cliff&0x02);
-		bool Lcliff = (cliff&0x04);
+		 Rbump = (bumper)&0x01;
+		 Lbump = (bumper &0x04);
+		 Cbump = (bumper&0x02);
+		 Lwheel = (drop&0x02);
+		 Rwheel = (drop&0x01);
+		 Rcliff = ((cliff)&0x01);
+		 Ccliff = (cliff&0x02);
+		 Lcliff = (cliff&0x04);
 		cout<<"Right bumper ="<<Rbump<<" Center bumper ="<<Cbump<<" Left bump = "<<Lbump<<endl;
 		cout<<"Left wheel ="<<Lwheel<<" Right wheel = "<<Rwheel<<endl;
 		cout<<"Right cliff ="<<Rcliff<<" Center cliff ="<<Ccliff<<" Left cliff = "<<Lcliff<<endl;
@@ -139,4 +149,22 @@ void readData(){
 	}
 }
 
+}
+void stopKobuki() {
+    movement(0, 0); // Send zero speed to stop
+    usleep(100000); // Wait for 100 ms to ensure the stop command is received
+}
+void turnRight(){
+	stopKobuki();
+for(int i=0;i<66;i++){
+movement((int)(w*b)/2,-1);
+usleep(20000);
+}
+}
+void turnLeft(){
+stopKobuki();
+for(int i=0;i<67;i++){
+movement((int)(w*b)/2,1);
+usleep(20000);
+}
 }
