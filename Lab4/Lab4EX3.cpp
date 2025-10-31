@@ -7,8 +7,11 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <iomanip>
+#include <ctime>
+#include <ratio>
+#include <chrono>
 using namespace std;
-
+using namespace std::chrono;
 int kobuki;
 int b=230; //distance between the kobuki wheels
 double w=0.785;//angular velocity
@@ -31,7 +34,7 @@ void turnLeft();
 void stopKobuki();
 float read_sonar();
 void dontFall();
-void helpMeeeeeee()
+void helpMeeeeeee();
 void dontCorner();
 int main(){
 	//Create connection to the Kobuki
@@ -63,7 +66,6 @@ int main(){
 			}
 			
 			
-
 		}else{
 		/*Move slowly to give the sensors enough time to read data,
 		the recommended speed is 100mm/s*/
@@ -179,10 +181,6 @@ void readData(){
 }
 
 }
-void stopKobuki() {
-    movement(0, 0); // Send zero speed to stop
-    usleep(100000); // Wait for 100 ms to ensure the stop command is received
-}
 void turnRight(){
 	stopKobuki();
 for(int i=0;i<66;i++){
@@ -250,10 +248,10 @@ void dontCorner(){
 	stopKobuki();
 	if(Rbump){
 		turnLeft();
-	}elseif(Lbump){
+	}else if(Lbump){
 	turnRight();
 	}
-	elseif(Cbump){
+	else if(Cbump){
 		turnRight();
 		turnRight();
 	}
