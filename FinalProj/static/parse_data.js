@@ -45,6 +45,7 @@ if (!!window.EventSource) {
         case"1": document.getElementById(butwheel).value = "Right"; break;
         case"2": document.getElementById(butwheel).value = "Left"; break;
         case"3": document.getElementById(butwheel).value = "Both"; break;
+        default: document.getElementById(butwheel).value = "OFF";
        }
       // if (drop=="0")
       //   {
@@ -66,8 +67,8 @@ if (!!window.EventSource) {
         case"4": document.getElementById(butcliff).value = "Left"; break;
         case"5": document.getElementById(butcliff).value = "Right + Left"; break;
         case"6": document.getElementById(butcliff).value = "Left + Center"; break;
-        case"0": document.getElementById(butcliff).value = "ALL"; break;
-
+        case"7": document.getElementById(butcliff).value = "ALL"; break;
+        default: document.getElementById(butcliff).value = "OFF";
       }
       // if (cliff=="0")
       //   {
