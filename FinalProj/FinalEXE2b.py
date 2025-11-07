@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 #Find the IP Address of your device
 #Use the 'ifconfig' terminal command, the address should be in the format  "XX.XXX.XXX.XXX"
-IP_Address = 'XX.XXX.XXX.XXX'
+IP_Address = '10.227.25.223'
 PORT = 8080
 #Connect the *.html page to the server and run as the default page
 
@@ -48,9 +48,21 @@ def UpFunction():
     return "Nothing"
 
 # define the rest of the functions to handle the left, right, down and stop buttons (4 functions)
-@app.route('/function_name')
+@app.route('/LeftFunction')
 def function_name():
-    print('In XXFunction')
+    print('In LeftFunction')
+    return "Nothing"
+@app.route('/RightFunction')
+def function_name():
+    print('In RightFunction')
+    return "Nothing"
+@app.route('/StopFunction')
+def function_name():
+    print('In StopFunction')
+    return "Nothing"
+@app.route('/DownFunction')
+def function_name():
+    print('In DownFunction')
     return "Nothing"
 
 

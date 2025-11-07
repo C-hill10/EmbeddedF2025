@@ -1,20 +1,36 @@
 <html>
 	<head>
-		<!-- define your title  -->
+		<title> Lightbulb </title>
 	</head>
 
 
 	<body>
 		<!-- the description sentence  -->
-
 		<!-- finsh the src attribute. To adjust the size of the image, you can modify  width="300px" height="400px" -->
-		<center><img id='myimage' alt='write something' width="300px" height="400px" src="../static/img name"></center>
-		
+		<center>
+			<h1> Lightbulb </h1>
+			<img id='pic_bulb' alt='bulb off' width="300px" height="400px" src="../static/pic_bulboff.png">  
+		</center>
+		<script>
+			function turnon(){
+				picture=document.getElementById('pic_bulb');
+				picture.src="../static/pic_bulbon.png"
+
+			}
+			function turnoff(){
+				picture=document.getElementById('pic_bulb');
+				picture.src="../static/pic_bulboff.png"
+			}
+
+
+
+		</script>
 		<!-- to modify the position and size of the buttons, you can modify  style="position:relative;top:5%;left:30%" 
 		and style="font-size:30;height:100px; width:200px;" -->
-		<div  style="position:relative;top:5%;left:36%">
-	      <input style="font-size:30;height:100px; width:200px;" type = "button" id = "turn_on" value = "None" />
-	      <input style="font-size:30;height:100px; width:200px;" type = "button" id = "turn_off" value = "None" />
+		<div  style="position:relative;top:0%;left:35.5%">
+			<id></id>
+	      <input style="font-size:30;height:100px; width:200px;" type = "button" onclick = 'turnon()' id = "turn_on" value = "On" />
+	      <input style="font-size:30;height:100px; width:200px;" type = "button" onclick = 'turnoff()' id = "turn_off" value = "Off" />
     	</div>
 
 
